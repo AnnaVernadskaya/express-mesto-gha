@@ -4,6 +4,7 @@
     "no-underscore-dangle":
     ["error", { "allow": ["_id"] }],
     "linebreak-style": 0,
-    "eol-last": ["error", "never"]
+    "eol-last": ["error", "never"],
+    "object-curly-newline": 0
   }
 }
