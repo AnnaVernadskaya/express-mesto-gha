@@ -2,7 +2,7 @@ const Card = require('../models/card');
 
 const getCards = (req, res) => {
   Card.find({})
-    .populate(['owner', 'likes'])
+    .populate(['name', 'link'])
     .then((cards) => res.send({ data: cards }))
     .catch(() => res.status(500)
       .send({ message: 'Ошибка по умолчанию' }));
@@ -10,9 +10,9 @@ const getCards = (req, res) => {
 
 const createCard = (res, req) => {
   const { name, link } = req.body;
-  const user = req.user._id;
+  const { _id } = req.user;
 
-  Card.create({ name, link, owner: user })
+  Card.create({ name, link, owner: _id })
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
