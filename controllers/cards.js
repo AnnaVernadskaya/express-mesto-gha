@@ -8,7 +8,7 @@ const getCards = (req, res) => {
       .send({ message: 'Ошибка по умолчанию' }));
 };
 
-const createCard = (res, req) => {
+const createCard = (req, res) => {
   const { name, link } = req.body;
   const { _id } = req.user;
 
