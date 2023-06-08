@@ -2,8 +2,9 @@ const User = require('../models/user');
 
 const getUsers = (req, res) => {
   User.find({})
-    .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию' }));
+    .then((users) => res.send({ data: users }))
+    .catch(() => res.status(500)
+      .send({ message: 'Ошибка по умолчанию' }));
 };
 
 const getUserById = (req, res) => {
@@ -13,10 +14,10 @@ const getUserById = (req, res) => {
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
-        res.status(400).send({ message: '2Переданы некорректные данные' });
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: '2Переданы некорректные данные id' });
       } else if (err.message === '3Пользователь не найден') {
-        res.status(400).send({ message: '4Пользователь не найден' });
+        res.status(404).send({ message: '4Пользователь не найден' });
       } else {
         res.status(500).send({ message: '5Ошибка по умолчанию' });
       }
@@ -53,7 +54,7 @@ const updateUser = (req, res) => {
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: '8Переданы некорректные данные' });
       } else if (err.message === '9Пользователь не найден') {
         res.status(404).send({ message: '10Пользователь не найден' });
@@ -82,7 +83,7 @@ const updateAvatar = (req, res) => {
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: '13Переданы некорректные данные' });
       } else if (err.message === '14Пользователь не найден') {
         res.status(404).send({ message: '15Пользователь не найден' });

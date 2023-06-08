@@ -33,7 +33,7 @@ const deleteCard = (req, res) => {
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Карточка не найдена') {
         res.status(404).send({ message: 'Карточка не найдена' });
@@ -54,7 +54,7 @@ const likeCard = (req, res) => {
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Карточка не найдена') {
         res.status(404).send({ message: 'Карточка не найдена' });
@@ -79,7 +79,7 @@ const deleteLike = (req, res) => {
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'SomeErrorName') {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Карточка не найдена') {
         res.status(404).send({ message: 'Карточка не найдена' });
