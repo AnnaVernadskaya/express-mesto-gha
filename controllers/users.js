@@ -7,9 +7,7 @@ const getUsers = (req, res) => {
 };
 
 const getUserById = (req, res) => {
-  const _id = req.params.userId;
-
-  User.findById({ _id })
+  User.findById({ _id: req.params.userId })
     .orFail(() => {
       throw new Error('1Пользователь не найден');
     })
