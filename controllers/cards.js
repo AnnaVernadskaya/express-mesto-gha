@@ -2,16 +2,17 @@ const Card = require('../models/card');
 
 const getCards = (req, res) => {
   Card.find({})
+    .populate(['owner', 'likes'])
     .then((cards) => res.send({ data: cards }))
     .catch(() => res.status(500)
-      .send({ message: 'Internal Server Error' }));
+      .send({ message: 'Ошибка по умолчанию' }));
 };
 
 const createCard = (res, req) => {
   const { name, link } = req.body;
-  const owner = req.user._id;
+  const user = req.user._id;
 
-  Card.create({ name, link, owner })
+  Card.create({ name, link, owner: user })
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -19,15 +20,13 @@ const createCard = (res, req) => {
           .map((error) => error.message).join('; ');
         res.status(400).send({ message });
       } else {
-        res.status(500).send({ message: 'Internal Server Error' });
+        res.status(500).send({ message: 'Ошибка по умолчанию' });
       }
     });
 };
 
 const deleteCard = (req, res) => {
-  const _id = req.params.cardId;
-
-  Card.findByIdAndRemove({ _id })
+  Card.findByIdAndRemove({ _id: req.params.cardId })
     .orFail(() => {
       throw new Error('Карточка не найдена');
     })
@@ -68,7 +67,7 @@ const likeCard = (req, res) => {
     });
 };
 
-const deleteLike = (req, res) => {
+const dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -93,5 +92,5 @@ const deleteLike = (req, res) => {
 };
 
 module.exports = {
-  getCards, createCard, deleteCard, likeCard, deleteLike,
+  getCards, createCard, deleteCard, likeCard, dislikeCard,
 };
