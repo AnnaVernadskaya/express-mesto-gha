@@ -16,9 +16,7 @@ const createCard = (req, res) => {
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        const message = Object.values(err.errors)
-          .map((error) => error.message).join('; ');
-        res.status(400).send({ message });
+        res.status(400).send({ message: 'Переданы некорректные данные' });
       } else {
         res.status(500).send({ message: 'Ошибка по умолчанию' });
       }
