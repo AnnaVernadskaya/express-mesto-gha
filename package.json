@@ -1,7 +1,7 @@
 {
   "name": "express-mesto-gha",
   "version": "1.0.0",
-  "description": "[![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)\r # Проект Mesto фронтенд + бэкенд",
+  "description": " Проект Mesto фронтенд + бэкенд",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -11,7 +11,7 @@
     "deploy": "gh-pages -d dist"
   },
   "keywords": [],
-  "author": "",
+  "author": "Anna V",
   "license": "ISC",
   "devDependencies": {
     "eslint": "^8.42.0",

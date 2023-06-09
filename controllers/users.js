@@ -1,9 +1,14 @@
 const User = require('../models/user');
+const {
+  ERROR_BED_REQUEST,
+  ERROR_NOT_FOUND,
+  ERROR_INTERNAL_SERVER,
+} = require('../utils/constants');
 
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => res.status(500)
+    .catch(() => res.status(ERROR_INTERNAL_SERVER)
       .send({ message: 'Ошибка по умолчанию' }));
 };
 
@@ -15,11 +20,11 @@ const getUserById = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные id' });
+        res.status(ERROR_BED_REQUEST).send({ message: 'Переданы некорректные данные id' });
       } else if (err.message === 'Пользователь не найден') {
-        res.status(404).send({ message: 'Пользователь не найден' });
+        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
-        res.status(500).send({ message: 'Ошибка по умолчанию' });
+        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Ошибка по умолчанию' });
       }
     });
 };
@@ -32,9 +37,9 @@ const createUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const message = Object.values(err.errors).map((error) => error.message).join('; ');
-        res.status(400).send({ message });
+        res.status(ERROR_BED_REQUEST).send({ message });
       } else {
-        res.status(500).send({ message: 'Ошибка по умолчанию' });
+        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Ошибка по умолчанию' });
       }
     });
 };
@@ -55,13 +60,13 @@ const updateUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(ERROR_BED_REQUEST).send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Пользователь не найден') {
-        res.status(404).send({ message: 'Пользователь не найден' });
+        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(ERROR_BED_REQUEST).send({ message: 'Переданы некорректные данные' });
       } else {
-        res.status(500).send({ message: 'Ошибка по умолчанию' });
+        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Ошибка по умолчанию' });
       }
     });
 };
@@ -83,14 +88,13 @@ const updateAvatar = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
+        res.status(ERROR_BED_REQUEST).send({ message: 'Переданы некорректные данные' });
       } else if (err.message === 'Пользователь не найден') {
-        res.status(404).send({ message: 'Пользователь не найден' });
+        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else if (err.name === 'ValidationError') {
-        const message = Object.values(err.errors).map((error) => error.message).join('; ');
-        res.status(400).send({ message });
+        res.status(ERROR_BED_REQUEST).send({ message: 'Переданы некорректные данные' });
       } else {
-        res.status(500).send({ message: 'Ошибка по умолчанию' });
+        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Ошибка по умолчанию' });
       }
     });
 };
