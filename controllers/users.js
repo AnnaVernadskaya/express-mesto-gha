@@ -50,7 +50,8 @@ const updateUser = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
-    { new: true,
+    {
+      new: true,
       runValidators: true,
     },
   )
