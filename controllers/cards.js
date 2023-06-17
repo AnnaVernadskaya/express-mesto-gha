@@ -1,92 +1,86 @@
+const mongoose = require('mongoose');
 const Card = require('../models/card');
+const BadRequest = require('../errors/badRequest');
+const ErrorNotFound = require('../errors/errorNotFound');
+const ErrorForbidden = require('../errors/errorForbidden');
 const {
   OK_CREATED,
-  ERROR_BED_REQUEST,
-  ERROR_NOT_FOUND,
   ERROR_INTERNAL_SERVER,
 } = require('../utils/constants');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(ERROR_INTERNAL_SERVER)
-      .send({ message: 'Ошибка по умолчанию' }));
+    .catch(next);
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const { name, link } = req.body;
   const user = req.user._id;
 
   Card.create({ name, link, owner: user })
     .then((card) => res.status(OK_CREATED).send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_BED_REQUEST).send({ message: 'Переданы некорректные данные' });
+      if (err instanceof mongoose.Error.ValidationError) {
+        next(new BadRequest('Переданы некорректные данные'));
       } else {
-        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Ошибка по умолчанию' });
+        next(err);
       }
     });
 };
 
-const deleteCard = (req, res) => {
-  Card.findByIdAndRemove({ _id: req.params.cardId })
-    .orFail(() => {
-      throw new Error('Карточка не найдена');
+const deleteCard = (req, res, next) => {
+  const _id = req.params.cardId;
+
+  Card.findById({ _id })
+    .then((card) => {
+      if (!card) {
+        throw new ErrorNotFound('Переданы некорректные данные');
+      } else if (!(req.user._id === card.owner._id.toString())) {
+        throw new ErrorForbidden('Невозможно удалить чужую карточку');
+      } else {
+        card.deleteOne()
+          .then((cardId) => {
+            res.status(OK_CREATED).send({ data: cardId });
+          })
+          .catch((err) => next(err));
+      }
     })
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_BED_REQUEST).send({ message: 'Переданы некорректные данные' });
-      } else if (err.message === 'Карточка не найдена') {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Карточка не найдена' });
-      } else {
-        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Ошибка по умолчанию' });
-      }
-    });
+    .catch((err) => next(err));
 };
 
-const likeCard = (req, res) => {
+const likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => {
-      throw new Error('Карточка не найдена');
-    })
+    .orFail(new Error('Карточка не найдена'))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_BED_REQUEST).send({ message: 'Переданы некорректные данные' });
+        next(new BadRequest('Переданы некорректные данные'));
       } else if (err.message === 'Карточка не найдена') {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Карточка не найдена' });
-      } else if (err.name === 'ValidationError') {
-        const message = Object.values(err.errors)
-          .map((error) => error.message).join('; ');
-        res.status(ERROR_BED_REQUEST).send({ message });
+        next(new ErrorNotFound('Карточка не найдена'));
       } else {
         res.status(ERROR_INTERNAL_SERVER).send({ message: 'Ошибка по умолчанию' });
       }
     });
 };
 
-const dislikeCard = (req, res) => {
+const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => {
-      throw new Error('Карточка не найдена');
-    })
+    .orFail(new Error('Карточка не найдена'))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_BED_REQUEST).send({ message: 'Переданы некорректные данные' });
+        next(new BadRequest('Переданы некорректные данные'));
       } else if (err.message === 'Карточка не найдена') {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Карточка не найдена' });
-      } else if (err.name === 'ValidationError') {
-        res.status(ERROR_BED_REQUEST).send({ message: 'Переданы некорректные данные' });
+        next(new ErrorNotFound('Карточка не найдена'));
       } else {
         res.status(ERROR_INTERNAL_SERVER).send({ message: 'Ошибка по умолчанию' });
       }
