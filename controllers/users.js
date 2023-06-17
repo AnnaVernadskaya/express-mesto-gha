@@ -1,8 +1,7 @@
-const mongoose = require('mongoose');
-const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const BadRequest = require('../errors/badRequest');
+const User = require('../models/user');
 
 const ErrorNotFound = require('../errors/errorNotFound');
 
@@ -103,7 +102,7 @@ const updateAvatar = (req, res, next) => {
 const dataUser = (req, res, next) => {
   const { userId } = req.user._id;
   User.findById({ userId })
-    .then((user) => checkUser(user, res))
+    .then((user) => findUser(user, res))
     .catch(next);
 };
 
