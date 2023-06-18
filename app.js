@@ -20,7 +20,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 app.use('/users', require('./middlewares/auth'), require('./routes/users'));
-app.use(require('./middlewares/errorsValidation'));
 
 app.post('/signin', validateSignin, login);
 app.post('/signup', validateSignup, createUser);
