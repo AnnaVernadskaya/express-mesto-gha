@@ -3,7 +3,7 @@ const { ERROR_NOT_FOUND } = require('../utils/constants');
 class ErrorNotFound extends Error {
   constructor(message) {
     super(message);
-    this.type = ERROR_NOT_FOUND;
+    this.statusCode = ERROR_NOT_FOUND;
   }
 }
 
