@@ -1,6 +1,17 @@
 const { Joi, celebrate } = require('celebrate');
-
+const { ERROR_INTERNAL_SERVER } = require('../utils/constants');
 const regex = /(https?:\/\/)(www)?([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=])*#?$/;
+
+const errorInternalServer = ((err, req, res, next) => {
+  const { statusCode = ERROR_INTERNAL_SERVER, message } = err;
+
+  res.status(statusCode)
+    .send({
+      message: statusCode === 500 ? 'Внутренняя ошибка сервера' : message,
+    });
+
+  next();
+});
 
 const validateSignup = celebrate({
   body: Joi.object().keys({
@@ -52,6 +63,7 @@ const validateFormCard = celebrate({
 });
 
 module.exports = {
+  errorInternalServer,
   validateSignup,
   validateIdUser,
   validateSignin,

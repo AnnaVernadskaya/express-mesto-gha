@@ -5,6 +5,7 @@ const { login, createUser } = require('./controllers/users');
 const { validateSignin } = require('./middlewares/errorsValidation');
 const { validateSignup } = require('./middlewares/errorsValidation');
 const { auth } = require('./middlewares/auth');
+const { errorInternalServer } = require('./middlewares/errorsValidation');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -28,16 +29,7 @@ app.use('/cards', require('./routes/cards'));
 
 app.use('*', (req, res) => res.status(404).send({ message: 'Файл не найден' }));
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-
-  res.status(statusCode)
-    .send({
-      message: statusCode === 500 ? 'Внутренняя ошибка сервера' : message,
-    });
-
-  next();
-});
+app.use(errorInternalServer);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
