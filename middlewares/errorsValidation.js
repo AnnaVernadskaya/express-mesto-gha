@@ -1,5 +1,6 @@
 const { Joi, celebrate } = require('celebrate');
 const { ERROR_INTERNAL_SERVER } = require('../utils/constants');
+
 const regex = /(https?:\/\/)(www)?([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=])*#?$/;
 
 const errorInternalServer = ((err, req, res, next) => {
