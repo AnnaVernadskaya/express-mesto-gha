@@ -25,6 +25,8 @@ app.use('/cards', require('./routes/cards'));
 app.post('/signin', validateSignin, login);
 app.post('/signup', validateSignup, createUser);
 
+app.use('*', (req, res) => res.status(404).send({ message: 'Файл не найден' }));
+
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
 
