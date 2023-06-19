@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const { errors } = require('celebrate');
 const { login, createUser } = require('./controllers/users');
+const { auth } = require('./middlewares/auth');
 const { validateSignin } = require('./middlewares/errorsValidation');
 const { validateSignup } = require('./middlewares/errorsValidation');
-const { auth } = require('./middlewares/auth');
 const { errorInternalServer } = require('./middlewares/errorsValidation');
 
 const { PORT = 3000 } = process.env;
@@ -20,8 +20,8 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.post('/signin', validateSignin, login);
 app.post('/signup', validateSignup, createUser);
+app.post('/signin', validateSignin, login);
 
 app.use(auth);
 
