@@ -56,17 +56,15 @@ const likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => {
-      if (!card) {
-        throw new ErrorNotFound('Карточка не найдена');
-      }
-      res.status(OK_STATUS).send({ data: card });
-    })
-    .carch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
+    .orFail(new Error('Карточка не найдена'))
+    .then((card) => res.status(OK_STATUS).send(card))
+    .catch((err) => {
+      if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));
+      } else if (err.message === 'Карточка не найдена') {
+        next(new ErrorNotFound('Карточка не найдена'));
       } else {
-        next(err);
+        res.status(ERROR_INTERNAL_SERVER).send({ message: 'Ошибка по умолчанию' });
       }
     });
 };
