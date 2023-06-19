@@ -4,6 +4,7 @@ const BadRequest = require('../errors/badRequest');
 const ErrorNotFound = require('../errors/errorNotFound');
 const ErrorForbidden = require('../errors/errorForbidden');
 const {
+  OK_STATUS,
   OK_CREATED,
   ERROR_INTERNAL_SERVER,
 } = require('../utils/constants');
@@ -41,7 +42,7 @@ const deleteCard = (req, res, next) => {
       } else {
         card.deleteOne()
           .then((cardId) => {
-            res.status(OK_CREATED).send({ data: cardId });
+            res.status(OK_STATUS).send({ data: cardId });
           })
           .catch((err) => next(err));
       }
@@ -56,7 +57,7 @@ const likeCard = (req, res, next) => {
     { new: true },
   )
     .orFail(new Error('Карточка не найдена'))
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequest('Переданы некорректные данные'));
