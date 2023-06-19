@@ -5,7 +5,7 @@ const ErrorNotFound = require('../errors/errorNotFound');
 const ErrorConflict = require('../errors/errorConflict');
 const User = require('../models/user');
 
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET, NODE_ENV } = process.env;
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -113,10 +113,10 @@ const login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        JWT_SECRET,
+        NODE_ENV === 'production' ? JWT_SECRET : 'super-strong-secret',
         { expiresIn: '7d' },
       );
-      res.cookie('jwt', token, {
+      res.status(200).cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
       }).send({ email });
