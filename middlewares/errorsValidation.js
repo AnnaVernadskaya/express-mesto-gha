@@ -52,7 +52,7 @@ const validateAvatar = celebrate({
 
 const validateIdCard = celebrate({
   params: Joi.object().keys({
-    idCard: Joi.string().length(24).hex().required(),
+    cardId: Joi.string().length(24).hex().required(),
   }),
 });
 

@@ -121,6 +121,14 @@ const login = (req, res, next) => {
     .catch(next);
 };
 
+const logout = (req, res, next) => {
+  User.findOne({ _id: req.user._id })
+    .then(() => {
+      res.clearCookie('token', { httpOnly: true }).send({ data: 'Выход успешно осуществлён.' });
+    })
+    .catch(next);
+};
+
 module.exports = {
   getUsers,
   getUserInfo,
@@ -129,4 +137,5 @@ module.exports = {
   updateUser,
   updateAvatar,
   login,
+  logout,
 };
