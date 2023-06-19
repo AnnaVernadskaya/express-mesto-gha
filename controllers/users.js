@@ -14,11 +14,10 @@ const getUsers = (req, res, next) => {
     .catch(next);
 };
 
-const findUser = (userId, res) => {
-  if (userId) {
-    return res.send(userId).status(200);
-  }
-  throw new ErrorNotFound('Пользователь не найден');
+const getUserInfo = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((user) => res.send({ data: user }))
+    .catch(next);
 };
 
 const createUser = (req, res, next) => {
@@ -26,7 +25,8 @@ const createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
 
-  bcrypt.hash(password, 10)
+  bcrypt
+    .hash(password, 10)
     .then((hash) => User.create({
       name,
       about,
@@ -35,7 +35,10 @@ const createUser = (req, res, next) => {
       password: hash,
     }))
     .then(() => res.status(201).send({
-      name, about, avatar, email,
+      name,
+      about,
+      avatar,
+      email,
     }))
     .catch((err) => {
       if (err.code === 11000) {
@@ -49,15 +52,12 @@ const createUser = (req, res, next) => {
 };
 
 const getUserById = (req, res, next) => {
-  const { id } = req.params;
-  User.findById(id)
-    .then((userId) => findUser(userId, res))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequest('Переданы некорректные данные id'));
-      }
-      next(err);
-    });
+  const { userId } = req.params;
+
+  User.findById(userId)
+    .orFail(new ErrorNotFound('Пользователь не найден'))
+    .then((user) => res.send({ data: user }))
+    .catch(next);
 };
 
 const updateUser = (req, res, next) => {
@@ -71,7 +71,7 @@ const updateUser = (req, res, next) => {
       runValidators: true,
     },
   )
-    .then((userId) => findUser(userId, res))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -91,20 +91,13 @@ const updateAvatar = (req, res, next) => {
       runValidators: true,
     },
   )
-    .then((userId) => findUser(userId, res))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
       }
       next(err);
     });
-};
-
-const dataUser = (req, res, next) => {
-  const { userId } = req.user._id;
-  User.findById({ userId })
-    .then((user) => findUser(user, res))
-    .catch(next);
 };
 
 const login = (req, res, next) => {
@@ -117,14 +110,23 @@ const login = (req, res, next) => {
         NODE_ENV === 'production' ? JWT_SECRET : 'super-strong-secret',
         { expiresIn: '7d' },
       );
-      res.status(200).cookie('jwt', token, {
-        maxAge: 3600000 * 24 * 7,
-        httpOnly: true,
-      }).send({ email });
+      res
+        .status(200)
+        .cookie('token', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+        })
+        .send({ email });
     })
     .catch(next);
 };
 
 module.exports = {
-  getUsers, findUser, createUser, getUserById, updateUser, updateAvatar, dataUser, login,
+  getUsers,
+  getUserInfo,
+  createUser,
+  getUserById,
+  updateUser,
+  updateAvatar,
+  login,
 };

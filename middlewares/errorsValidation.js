@@ -33,7 +33,7 @@ const validateSignin = celebrate({
 
 const validateIdUser = celebrate({
   params: Joi.object().keys({
-    idUser: Joi.string().length(24).hex().required(),
+    userId: Joi.string().length(24).hex().required(),
   }),
 });
 

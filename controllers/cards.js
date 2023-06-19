@@ -3,11 +3,7 @@ const Card = require('../models/card');
 const BadRequest = require('../errors/badRequest');
 const ErrorNotFound = require('../errors/errorNotFound');
 const ErrorForbidden = require('../errors/errorForbidden');
-const {
-  OK_STATUS,
-  OK_CREATED,
-  ERROR_INTERNAL_SERVER,
-} = require('../utils/constants');
+const { OK_STATUS, OK_CREATED, ERROR_INTERNAL_SERVER } = require('../utils/constants');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -40,7 +36,8 @@ const deleteCard = (req, res, next) => {
       } else if (!(req.user._id === card.owner._id.toString())) {
         throw new ErrorForbidden('Невозможно удалить чужую карточку');
       } else {
-        card.deleteOne()
+        card
+          .deleteOne()
           .then((cardId) => {
             res.status(OK_STATUS).send({ data: cardId });
           })
@@ -51,11 +48,7 @@ const deleteCard = (req, res, next) => {
 };
 
 const likeCard = (req, res, next) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true },
-  )
+  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .orFail(new Error('Карточка не найдена'))
     .then((card) => res.status(OK_STATUS).send(card))
     .catch((err) => {
@@ -70,11 +63,7 @@ const likeCard = (req, res, next) => {
 };
 
 const dislikeCard = (req, res, next) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } },
-    { new: true },
-  )
+  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .orFail(new Error('Карточка не найдена'))
     .then((card) => res.send({ data: card }))
     .catch((err) => {
@@ -89,5 +78,9 @@ const dislikeCard = (req, res, next) => {
 };
 
 module.exports = {
-  getCards, createCard, deleteCard, likeCard, dislikeCard,
+  getCards,
+  createCard,
+  deleteCard,
+  likeCard,
+  dislikeCard,
 };
