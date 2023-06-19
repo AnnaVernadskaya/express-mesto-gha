@@ -56,20 +56,20 @@ const likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-  .then((card) => {
-    if (!card) {
-      throw new ErrorNotFound('Карточка не найдена');
-    }
-    res.status(OK_STATUS).send({ data: card });
-  })
-  .carch((err) => {
-    if (err instanceof mongoose.Error.CastError) {
-      next(new BadRequest('Переданы некорректные данные'));
-    }
-    else {
-      next(err);
-    }
-  });
+    .then((card) => {
+      if (!card) {
+        throw new ErrorNotFound('Карточка не найдена');
+      }
+      res.status(OK_STATUS).send({ data: card });
+    })
+    .carch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        next(new BadRequest('Переданы некорректные данные'));
+      } else {
+        next(err);
+      }
+    });
+};
 
 const dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
