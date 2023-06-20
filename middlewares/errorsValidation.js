@@ -1,7 +1,7 @@
 const { Joi, celebrate } = require('celebrate');
 const { ERROR_INTERNAL_SERVER } = require('../utils/constants');
 
-const regex = /^(https?:\/\/)(www)?([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=])*#?$/;
+const regExpForURL = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/;
 
 const errorInternalServer = ((err, req, res, next) => {
   const { statusCode = ERROR_INTERNAL_SERVER, message } = err;
@@ -17,7 +17,7 @@ const errorInternalServer = ((err, req, res, next) => {
 const validateSignup = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(regex),
+    avatar: Joi.string().pattern(regExpForURL),
     about: Joi.string().min(2).max(30),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
@@ -46,7 +46,7 @@ const validateProfile = celebrate({
 
 const validateAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().pattern(regex),
+    avatar: Joi.string().required().pattern(regExpForURL),
   }),
 });
 
@@ -59,7 +59,7 @@ const validateIdCard = celebrate({
 const validateFormCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
-    link: Joi.string().min(2).required().pattern(regex),
+    link: Joi.string().min(2).required().pattern(regExpForURL),
   }),
 });
 

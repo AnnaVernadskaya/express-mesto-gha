@@ -5,6 +5,7 @@ const BadRequest = require('../errors/badRequest');
 const ErrorNotFound = require('../errors/errorNotFound');
 const ErrorConflict = require('../errors/errorConflict');
 const User = require('../models/user');
+const { OK_CREATED } = require('../utils/constants');
 
 const { JWT_SECRET, NODE_ENV } = process.env;
 
@@ -34,7 +35,7 @@ const createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then(() => res.status(201).send({
+    .then(() => res.status(OK_CREATED).send({
       name,
       about,
       avatar,
@@ -111,7 +112,6 @@ const login = (req, res, next) => {
         { expiresIn: '7d' },
       );
       res
-        .status(200)
         .cookie('token', token, {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
