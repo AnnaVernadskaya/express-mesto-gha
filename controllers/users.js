@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-require('dotenv').config();
 const BadRequest = require('../errors/badRequest');
 const ErrorNotFound = require('../errors/errorNotFound');
 const ErrorConflict = require('../errors/errorConflict');
@@ -44,11 +43,11 @@ const createUser = (req, res, next) => {
     .catch((err) => {
       if (err.code === 11000) {
         next(new ErrorConflict('Такой email уже зарегистрирован'));
-      }
-      if (err.code === 'ValidationError') {
+      } else if (err.code === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 

@@ -8,7 +8,7 @@ const errorInternalServer = ((err, req, res, next) => {
 
   res.status(statusCode)
     .send({
-      message: statusCode === 500 ? 'Внутренняя ошибка сервера' : message,
+      message: statusCode === ERROR_INTERNAL_SERVER ? 'Внутренняя ошибка сервера' : message,
     });
 
   next();
